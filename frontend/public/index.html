@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeepBopProps$ – Live NBA Props</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕷️</text></svg>">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="toast"></div>
+
+<header>
+  <div class="hdr">
+    <div class="logo">🕷️ BeepBop<span>Props</span>$</div>
+    <div class="hmeta">
+      <div class="live-pill">● LIVE</div>
+      <div class="date-pill" id="date-display">--</div>
+      <button class="refresh-btn" id="refresh-btn" onclick="loadAllData()">
+        <span id="refresh-icon">🕸️</span> Refresh Board
+      </button>
+    </div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#" class="active" onclick="showTab('tab-games',this)">🗓 Games</a></li>
+      <li><a href="#" onclick="showTab('tab-props',this)">🎯 Props</a></li>
+      <li><a href="#" onclick="showTab('tab-altlines',this)">📊 Alt Lines</a></li>
+      <li><a href="#" onclick="showTab('tab-live',this)">⚡ Live</a></li>
+      <li><a href="#" onclick="showTab('tab-h2h',this)">⚔️ Head-to-Head</a></li>
+      <li><a href="#" onclick="showTab('tab-parlays',this)">💰 Parlays</a></li>
+      <li><a href="#" onclick="showTab('tab-injuries',this)">🏥 Injuries</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="ticker-bar">
+  <div class="ticker-inner" id="ticker-inner">
+    <div class="tick"><span class="dot"></span>Loading today's board...</div>
+    <div class="tick"><span class="dot"></span>BeepBopProps$ · DraftKings · FanDuel · BetMGM · Caesars · PrizePicks · Rebet</div>
+    <div class="tick"><span class="dot"></span>Alternate lines now available — click any prop to see all lines</div>
+    <div class="tick"><span class="dot"></span>Loading today's board...</div>
+    <div class="tick"><span class="dot"></span>BeepBopProps$ · DraftKings · FanDuel · BetMGM · Caesars · PrizePicks · Rebet</div>
+    <div class="tick"><span class="dot"></span>Alternate lines now available — click any prop to see all lines</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="main-layout">
+
+    <!-- ═══════════════ LEFT CONTENT ═══════════════ -->
+    <div id="left-content">
+
+      <div class="disclaimer">⚠️ BeepBopProps$ is for entertainment &amp; research only. Must be 21+ to wager. Please gamble responsibly.</div>
+
+      <div class="top-bar">
+        <div class="tier-legend">
+          <div class="tier-item"><div class="tier-dot" style="background:#FFD700"></div><strong style="color:#FFD700">ELITE</strong> 80%+</div>
+          <div class="tier-item"><div class="tier-dot" style="background:#00D4AA"></div><strong style="color:#00D4AA">STRONG</strong> 65-79%</div>
+          <div class="tier-item"><div class="tier-dot" style="background:#60a5fa"></div><strong style="color:#60a5fa">NEUTRAL</strong> 50-64%</div>
+          <div class="tier-item"><div class="tier-dot" style="background:#ff5555"></div><strong style="color:#ff5555">FADE</strong> &lt;50%</div>
+        </div>
+        <div id="last-updated-txt" style="font-size:10px;color:var(--muted)"></div>
+      </div>
+
+      <!-- ══ GAMES ══ -->
+      <div id="tab-games" class="tab-content active">
+        <div class="sec-title">🕷️ Today's Games — March 30, 2026</div>
+        <div id="games-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Loading Schedule...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+      <!-- ══ PROPS ══ -->
+      <div id="tab-props" class="tab-content">
+        <div class="sec-title">🎯 Player Props — 30+ Picks</div>
+        <div class="filter-bar">
+          <button class="fbtn active" onclick="filterProps('all',this)">All Props</button>
+          <button class="fbtn" onclick="filterProps('points',this)">Points</button>
+          <button class="fbtn" onclick="filterProps('rebounds',this)">Rebounds</button>
+          <button class="fbtn" onclick="filterProps('assists',this)">Assists</button>
+          <button class="fbtn" onclick="filterProps('threes',this)">3-Pointers</button>
+          <button class="fbtn" onclick="filterProps('blocks',this)">Blocks</button>
+          <button class="fbtn" onclick="filterProps('steals',this)">Steals</button>
+          <button class="fbtn" onclick="filterProps('elite',this)">⭐ Elite Only</button>
+          <button class="fbtn" onclick="filterProps('fade',this)">🚫 Fades</button>
+        </div>
+        <div id="props-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Scanning Props Board...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+      <!-- ══ ALT LINES ══ -->
+      <div id="tab-altlines" class="tab-content">
+        <div class="sec-title">📊 Alternate Lines — All Books</div>
+        <p style="color:var(--muted);font-size:12px;margin-bottom:14px;">Every prop shows DraftKings, FanDuel, BetMGM, Caesars, PrizePicks &amp; Rebet — plus alternate lines at every half-point. Find the best number across all books.</p>
+        <div class="filter-bar">
+          <button class="fbtn active" onclick="filterAlt('all',this)">All Players</button>
+          <button class="fbtn" onclick="filterAlt('points',this)">Points</button>
+          <button class="fbtn" onclick="filterAlt('rebounds',this)">Rebounds</button>
+          <button class="fbtn" onclick="filterAlt('assists',this)">Assists</button>
+          <button class="fbtn" onclick="filterAlt('threes',this)">3PM</button>
+          <button class="fbtn" onclick="filterAlt('blocks',this)">Blocks</button>
+        </div>
+        <div id="altlines-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Loading Alt Lines...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+      <!-- ══ LIVE ══ -->
+      <div id="tab-live" class="tab-content">
+        <div class="sec-title">⚡ Live In-Game Props</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;padding:6px 10px;background:rgba(229,34,34,.05);border-radius:6px;border:1px solid var(--bord)">Props auto-update every 60 seconds during games. Lines from DraftKings &amp; PrizePicks.</div>
+        <div id="live-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Tuning In Live...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+      <!-- ══ H2H ══ -->
+      <div id="tab-h2h" class="tab-content">
+        <div class="sec-title">⚔️ Head-to-Head Lookup</div>
+        <div class="h2h-box">
+          <div class="h2h-inputs">
+            <select id="h2h-t1" class="h2h-sel"><option value="">Team 1</option></select>
+            <span class="h2h-vs">VS</span>
+            <select id="h2h-t2" class="h2h-sel"><option value="">Team 2</option></select>
+            <button class="h2h-btn" onclick="lookupH2H()">Search ⚔️</button>
+          </div>
+          <div id="h2h-result"></div>
+        </div>
+      </div>
+
+      <!-- ══ PARLAYS ══ -->
+      <div id="tab-parlays" class="tab-content">
+        <div class="sec-title">💰 AI Parlay Builder</div>
+        <p style="color:var(--muted);font-size:12px;margin-bottom:14px;">Add picks to your slip from the Props tab. Pre-built parlays from today's top picks shown below.</p>
+        <div id="parlays-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Building Parlays...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+      <!-- ══ INJURIES ══ -->
+      <div id="tab-injuries" class="tab-content">
+        <div class="sec-title">🏥 Injury Report</div>
+        <div id="injuries-content"><div class="loader-box"><div class="sp">🕷️</div><div class="lt">Loading Injury Report...</div><div class="lb-w"><div class="lb"></div></div></div></div>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- ═══════════════ PICK SLIP ═══════════════ -->
+    <div class="slip-panel">
+      <div class="slip-box">
+        <div class="slip-head">
+          <div class="slip-title">🕷️ Pick Slip</div>
+          <div class="slip-sub">Add props → combined probability</div>
+        </div>
+        <div style="padding:10px">
+          <div id="slip-empty" style="text-align:center;padding:20px 8px;color:var(--muted);font-size:12px">
+            <span style="font-size:28px;display:block;margin-bottom:8px;opacity:.3">🕸️</span>
+            No picks yet!<br>Go to <strong>Props</strong> →<br>tap <em>+ Add to Slip</em>
+          </div>
+          <div id="slip-list" style="display:none"></div>
+        </div>
+        <div id="slip-calc" style="display:none">
+          <div id="slip-warn" class="slip-warn">⚠️ Same-game picks — correlation risk applied.</div>
+          <div class="slip-prob-row">
+            <span class="slip-prob-lbl">Combined Probability</span>
+            <span class="slip-prob-val" id="slip-pct">--%</span>
+          </div>
+          <div class="slip-bar"><div class="slip-bar-fill" id="slip-bar" style="width:0%"></div></div>
+          <div class="slip-tier" id="slip-tier">--</div>
+          <div class="slip-payout">
+            <div class="slip-pout"><div class="slip-pout-lbl">Est. DK Payout</div><div class="slip-pout-val" id="slip-dk">--</div></div>
+            <div class="slip-pout"><div class="slip-pout-lbl">PP Type</div><div class="slip-pout-val" id="slip-pp">--</div></div>
+          </div>
+          <div class="slip-formula" id="slip-formula">--</div>
+          <button class="slip-ai-btn" onclick="analyzeSlip()">🕷️ AI Analyze Slip</button>
+          <div id="slip-ai" style="display:none;margin-top:8px;padding:8px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);border-radius:7px;font-size:10px;color:var(--txt);line-height:1.6"></div>
+          <button class="btn-clear" onclick="clearSlip()">✕ Clear Slip</button>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-title">🕷️ SPIDER-SENSE TIPS</div>
+        <div class="tip-body">
+          • <strong>Alt Lines tab</strong> = find best number across all 6 books<br>
+          • <strong>Board refreshes every 15 min</strong> during games<br>
+          • <strong>2-leg slip:</strong> aim for 60%+ combined<br>
+          • <strong>3-leg slip:</strong> all Elite ≈ 60%<br>
+          • <strong>Same-game picks</strong> = correlation risk<br>
+          • Check <strong>Injuries</strong> before every tip-off
+        </div>
+      </div>
+
+      <!-- Book legend -->
+      <div class="book-legend">
+        <div class="book-legend-title">📚 BOOKS TRACKED</div>
+        <div class="book-grid">
+          <div class="book-chip dk">DraftKings</div>
+          <div class="book-chip fd">FanDuel</div>
+          <div class="book-chip mgm">BetMGM</div>
+          <div class="book-chip czr">Caesars</div>
+          <div class="book-chip pp">PrizePicks</div>
+          <div class="book-chip reb">Rebet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <strong style="color:var(--red)">BeepBopProps$</strong> · Real-time NBA Props · DraftKings · FanDuel · BetMGM · Caesars · PrizePicks · Rebet<br>
+  Auto-refreshes every 15 min · Lines change fast — always verify before wagering · Must be 21+ · 1-800-GAMBLER
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

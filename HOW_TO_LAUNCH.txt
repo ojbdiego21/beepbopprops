@@ -1,0 +1,142 @@
+🕷️ BeepBopProps$ v2 — HOW TO LAUNCH YOUR WEBSITE
+Follow steps IN ORDER. Takes ~30-45 minutes total.
+
+════════════════════════════════════════════
+STEP 1 — INSTALL TOOLS (one time only)
+════════════════════════════════════════════
+
+1. Install Node.js → https://nodejs.org → download LTS → install
+   Verify: open Terminal → type: node --version
+
+2. Install Git → https://git-scm.com → install
+   Verify: type: git --version
+
+3. Install VS Code → https://code.visualstudio.com (code editor)
+
+════════════════════════════════════════════
+STEP 2 — FREE ACCOUNTS YOU NEED
+════════════════════════════════════════════
+
+A) GitHub → https://github.com (stores your code — FREE)
+
+B) Railway → https://railway.app (hosts your site — FREE tier)
+   Sign up with GitHub account
+
+C) MongoDB Atlas → https://mongodb.com/atlas (database — FREE)
+   Sign up → Build a Database → M0 Free tier
+   Create a username + password → save them
+   Network Access → Allow from Anywhere
+   Connect → Connect your application → copy the connection string
+   Replace <password> with your real password → SAVE IT
+
+D) The Odds API → https://the-odds-api.com (live lines — 500 req/mo FREE)
+   Sign up → copy your API key → SAVE IT
+
+E) Anthropic API → https://console.anthropic.com (AI analysis — optional)
+   Sign up → API Keys → Create key → SAVE IT
+
+════════════════════════════════════════════
+STEP 3 — PUT PROJECT ON GITHUB
+════════════════════════════════════════════
+
+1. Open Terminal, navigate to your project folder:
+   Mac:     cd ~/Desktop/beepbopprops2
+   Windows: cd C:\Users\YourName\Desktop\beepbopprops2
+
+2. Install dependencies:
+   npm install
+
+3. On github.com → + → New Repository → name: beepbopprops
+   DON'T check "Add README" → Create repository
+
+4. Run these commands (replace YOUR_USERNAME):
+   git init
+   git add .
+   git commit -m "BeepBopProps$ v2 — with alternate lines"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/beepbopprops.git
+   git push -u origin main
+
+════════════════════════════════════════════
+STEP 4 — DEPLOY TO RAILWAY (get a real URL)
+════════════════════════════════════════════
+
+1. Go to railway.app/dashboard → New Project
+   → Deploy from GitHub repo → select beepbopprops
+
+2. Click Variables tab → Add each:
+   MONGODB_URI     → your MongoDB connection string
+   ODDS_API_KEY    → your Odds API key
+   ANTHROPIC_API_KEY → your Anthropic key
+   NODE_ENV        → production
+
+3. Settings tab → Domains → Generate Domain
+   → You get: something.up.railway.app  ← YOUR LIVE SITE! ✅
+
+════════════════════════════════════════════
+STEP 5 — CUSTOM DOMAIN (optional, ~$12/yr)
+════════════════════════════════════════════
+
+1. Buy at namecheap.com (search beepbopprops.com)
+2. Railway → Settings → Domains → Add Custom Domain
+3. Add the CNAME Railway gives you in Namecheap DNS
+4. Wait 5-30 min → live at your domain ✅
+
+════════════════════════════════════════════
+UPDATING YOUR SITE
+════════════════════════════════════════════
+
+Any time you make changes:
+   git add .
+   git commit -m "what I changed"
+   git push
+
+Railway auto-redeploys. Done.
+
+════════════════════════════════════════════
+WHAT'S NEW IN V2
+════════════════════════════════════════════
+
+✅ 30+ player props (up from 12)
+✅ 6 books tracked: DraftKings, FanDuel, BetMGM, Caesars, PrizePicks, Rebet
+✅ Alternate Lines tab — every prop shows ±2 lines at every half-point
+✅ Best line highlighted in green across all books
+✅ Implied probability shown for each alt line
+✅ More stat types: points, rebounds, assists, 3PM, blocks, steals, turnovers
+✅ Reasoning shown on every prop card
+✅ Seeded fallback data — site always shows props even without API key
+
+════════════════════════════════════════════
+FILE STRUCTURE
+════════════════════════════════════════════
+
+beepbopprops2/
+├── package.json
+├── .env.example          ← copy to .env, fill in keys
+├── .gitignore
+├── railway.toml          ← Railway deployment config
+├── HOW_TO_LAUNCH.txt     ← this file
+├── backend/
+│   ├── server.js         ← main server
+│   ├── models.js         ← database schemas
+│   ├── routes/
+│   │   ├── games.js      ← /api/games
+│   │   ├── props.js      ← /api/props (with alt lines + 30+ seeded props)
+│   │   └── injuries.js   ← /api/injuries + /api/h2h + /api/analysis
+│   └── jobs/
+│       └── dataRefresh.js ← auto-fetches ESPN + Odds API every 15 min
+└── frontend/public/
+    ├── index.html
+    ├── css/style.css
+    └── js/app.js
+
+════════════════════════════════════════════
+DATA SOURCES
+════════════════════════════════════════════
+
+ESPN API (FREE)      → scores, schedules, injuries, H2H
+The Odds API (FREE)  → DK, FD, BetMGM, Caesars lines + props
+NBA Stats API (FREE) → player stats
+Anthropic API        → AI slip analysis (optional)
+
+Data refreshes every 15 min automatically. You never touch it.
