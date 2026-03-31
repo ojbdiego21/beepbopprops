@@ -60,3 +60,16 @@ async function start() {
   }
 }
 start();
+
+// Force clear props cache — visit /api/clear-props to reset
+app.get('/api/clear-props', async (req, res) => {
+  try {
+    const { Prop } = require('./models');
+    await Prop.deleteMany({}).catch(()=>{});
+    const { mem } = require('./jobs/dataRefresh');
+    mem.props = [];
+    res.json({ success: true, message: 'Props cleared! Refresh your board now.' });
+  } catch(e) {
+    res.json({ success: false, error: e.message });
+  }
+});
