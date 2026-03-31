@@ -34,7 +34,7 @@ function photoId(name) { return PHOTO_IDS[(name||'').toLowerCase()] || '0'; }
 
 function score(prop, injuries) {
   let s = 52;
-  const odds = parseInt((prop.dkOdds||'-110').replace('+',''))||−110;
+  const odds = parseInt((prop.dkOdds||'-110').replace('+',''))|| -110;
   if ((prop.dkOdds||'').startsWith('-')) {
     const o = Math.abs(odds);
     if (o>=160)s+=18; else if(o>=135)s+=13; else if(o>=115)s+=8; else if(o>=105)s+=4;
