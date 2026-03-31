@@ -333,3 +333,74 @@ footer{background:var(--dkblue);border-top:1px solid var(--bord);padding:14px;te
   #mobile-slip-btn{ display:none !important; }
   #mobile-slip-overlay{ display:none !important; }
 }
+
+/* ── BEEPBOPSTATS ── */
+.stats-search-wrap { max-width: 100%; }
+.stats-search-box { display: flex; gap: 8px; margin-bottom: 14px; }
+.stats-input {
+  flex: 1; background: var(--surf2); border: 1px solid var(--bord);
+  border-radius: 10px; color: var(--txt); padding: 12px 16px;
+  font-size: 14px; outline: none; transition: border .2s;
+}
+.stats-input:focus { border-color: var(--red); }
+.stats-input::placeholder { color: var(--muted); }
+.stats-btn {
+  padding: 12px 20px; background: var(--red); color: #fff;
+  border: none; border-radius: 10px; font-size: 13px;
+  font-weight: 700; cursor: pointer; white-space: nowrap;
+  transition: all .2s; letter-spacing: .5px;
+}
+.stats-btn:hover { background: var(--dkred); }
+
+.stats-suggestions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.stats-chip {
+  padding: 5px 12px; background: var(--surf2); border: 1px solid var(--bord);
+  border-radius: 20px; color: var(--muted); font-size: 11px; cursor: pointer;
+  transition: all .2s; white-space: nowrap;
+}
+.stats-chip:hover { background: var(--card); color: var(--txt); border-color: var(--red); }
+
+/* Stats result cards */
+.stats-result-card {
+  background: var(--card); border: 1px solid var(--bord);
+  border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+}
+.stats-result-head {
+  background: linear-gradient(135deg, var(--dkblue), var(--dkred));
+  padding: 14px 16px;
+}
+.stats-result-title { font-family: 'Bebas Neue', cursive; font-size: 22px; color: #fff; letter-spacing: 1px; }
+.stats-result-sub { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 2px; }
+
+/* Averages row */
+.stats-avgs { display: flex; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--bord); flex-wrap: wrap; }
+.stats-avg-box { background: var(--surf2); border-radius: 8px; padding: 10px 16px; text-align: center; border: 1px solid var(--bord); flex: 1; min-width: 80px; }
+.stats-avg-val { font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--gold); }
+.stats-avg-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+/* Game log table */
+.stats-table-wrap { overflow-x: auto; padding: 14px; }
+.stats-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 500px; }
+.stats-table th {
+  background: var(--surf2); color: var(--muted); padding: 7px 10px;
+  text-align: center; font-size: 10px; font-weight: 600; letter-spacing: .4px;
+  border-bottom: 1px solid var(--bord); white-space: nowrap;
+}
+.stats-table th:first-child { text-align: left; }
+.stats-table td { padding: 7px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,.04); }
+.stats-table td:first-child { text-align: left; color: var(--muted); font-size: 11px; }
+.stats-table tr:last-child td { border-bottom: none; }
+.stats-table tr:hover td { background: rgba(255,255,255,.02); }
+.stats-table .pts-high { color: var(--gold); font-weight: 700; }
+.stats-table .win { color: var(--green); font-weight: 700; }
+.stats-table .loss { color: var(--fade); font-weight: 700; }
+
+/* Player list table (position vs team) */
+.stats-player-row td:nth-child(2) { color: var(--muted); }
+
+.stats-suggestion-box {
+  background: var(--card); border: 1px solid var(--bord); border-radius: 12px; padding: 20px; text-align: center;
+}
+.stats-suggestion-box h3 { font-family: 'Bebas Neue', cursive; font-size: 20px; color: var(--red); margin-bottom: 8px; }
+.stats-suggestion-box p { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+.stats-sugg-grid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }

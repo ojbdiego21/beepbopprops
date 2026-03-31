@@ -8,7 +8,8 @@ const cron     = require('node-cron');
 const gamesRouter                                   = require('./routes/games');
 const propsRouter                                   = require('./routes/props');
 const { injuriesRouter, h2hRouter, analysisRouter } = require('./routes/injuries');
-const { refreshAllData }                            = require('./jobs/dataRefresh');
+const statsRouter                                   = require('./routes/stats');
+const { refreshAllData, resetDailyProps }           = require('./jobs/dataRefresh');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -22,8 +23,10 @@ app.use('/api/props',    propsRouter);
 app.use('/api/injuries', injuriesRouter);
 app.use('/api/h2h',      h2hRouter);
 app.use('/api/analysis', analysisRouter);
-app.get('/api/health',   (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
-app.get('*',             (req, res) => res.sendFile(path.join(__dirname, '../frontend/public/index.html')));
+app.use('/api/stats',    statsRouter);
+
+app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../frontend/public/index.html')));
 
 async function start() {
   try {
@@ -32,15 +35,26 @@ async function start() {
       await mongoose.connect(uri);
       console.log('✅ MongoDB connected');
     } else {
-      console.log('⚠️  No MongoDB — using in-memory store (restart clears data)');
+      console.log('⚠️  No MongoDB — in-memory mode');
     }
     app.listen(PORT, () => console.log('🕷️  BeepBopProps$ → http://localhost:' + PORT));
-    // Refresh every 15 min during game hours ET
-    cron.schedule('*/15 12-23 * * *', () => { console.log('🔄 15-min refresh'); refreshAllData(); }, { timezone: 'America/New_York' });
-    cron.schedule('0 0 * * *',        () => { console.log('🔄 Midnight refresh'); refreshAllData(); }, { timezone: 'America/New_York' });
+
+    // Reset yesterday's data at midnight ET
+    cron.schedule('0 0 * * *', async () => {
+      console.log('🔄 Midnight reset...');
+      await resetDailyProps();
+      await refreshAllData();
+    }, { timezone: 'America/New_York' });
+
+    // Refresh every 15 min during game hours
+    cron.schedule('*/15 12-23 * * *', () => {
+      console.log('🔄 15-min refresh...');
+      refreshAllData();
+    }, { timezone: 'America/New_York' });
+
     await refreshAllData();
     console.log('✅ Ready!');
-  } catch (e) {
+  } catch(e) {
     console.error('❌ Startup error:', e.message);
     process.exit(1);
   }

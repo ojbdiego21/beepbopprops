@@ -503,3 +503,138 @@ function animateMeters(){
     el.style.width=Math.max(8,Math.min(97,cur+(Math.random()-.38)*5)).toFixed(1)+'%';
   });
 }
+
+// ── BEEPBOPSTATS ─────────────────────────────────
+async function initStats() {
+  try {
+    var r = await fetch('/api/stats/popular');
+    var d = await r.json();
+    var sug = document.getElementById('stats-suggestions');
+    if (sug && d.searches) {
+      sug.innerHTML = d.searches.map(function(s) {
+        return '<div class="stats-chip" onclick="runSearch(\''+s.replace(/'/g,"\\'")+'\')">' + s + '</div>';
+      }).join('');
+    }
+  } catch(e) {}
+}
+
+function runSearch(query) {
+  var input = document.getElementById('stats-input');
+  if (input) input.value = query;
+  searchStats();
+}
+
+async function searchStats() {
+  var input = document.getElementById('stats-input');
+  var query = (input ? input.value : '').trim();
+  if (!query) { showToast('Type a search first!'); return; }
+
+  var result = document.getElementById('stats-result');
+  result.innerHTML = '<div class="loader-box" style="padding:40px"><div class="sp">🔍</div><div class="lt">Searching BeepBopStats...</div><div class="lb-w"><div class="lb"></div></div></div>';
+
+  try {
+    var r = await fetch('/api/stats/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+    var d = await r.json();
+    if (!d.success) {
+      result.innerHTML = '<div class="stats-suggestion-box"><h3>Hmm...</h3><p>' + (d.error||'Could not load stats.') + '</p></div>';
+      return;
+    }
+    renderStatsResult(d);
+  } catch(e) {
+    result.innerHTML = '<div class="stats-suggestion-box"><h3>Error</h3><p>' + e.message + '</p></div>';
+  }
+}
+
+// Enter key support
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    var inp = document.getElementById('stats-input');
+    if (inp) inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') searchStats(); });
+    initStats();
+  }, 1000);
+});
+
+function renderStatsResult(d) {
+  var result = document.getElementById('stats-result');
+  var html = '';
+
+  if (d.type === 'suggestion') {
+    html = '<div class="stats-suggestion-box">'
+      + '<h3>🕷️ BeepBopStats</h3>'
+      + '<p>' + d.message + '</p>'
+      + '<div class="stats-sugg-grid">'
+      + (d.suggestions||[]).map(function(s){ return '<div class="stats-chip" onclick="runSearch(\''+s.replace(/'/g,"\\'")+'\')">' + s + '</div>'; }).join('')
+      + '</div></div>';
+
+  } else if (d.type === 'player_vs_team') {
+    html = '<div class="stats-result-card">'
+      + '<div class="stats-result-head"><div class="stats-result-title">' + d.title + '</div><div class="stats-result-sub">' + d.subtitle + '</div></div>';
+
+    if (d.averages) {
+      html += '<div class="stats-avgs">'
+        + '<div class="stats-avg-box"><div class="stats-avg-val">' + d.averages.pts + '</div><div class="stats-avg-lbl">PPG Avg</div></div>'
+        + '<div class="stats-avg-box"><div class="stats-avg-val">' + d.averages.reb + '</div><div class="stats-avg-lbl">RPG Avg</div></div>'
+        + '<div class="stats-avg-box"><div class="stats-avg-val">' + d.averages.ast + '</div><div class="stats-avg-lbl">APG Avg</div></div>'
+      + '</div>';
+    }
+
+    if (d.games && d.games.length) {
+      html += '<div class="stats-table-wrap"><table class="stats-table">'
+        + '<thead><tr><th>Date</th><th>W/L</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>FG</th><th>3PT</th><th>MIN</th></tr></thead>'
+        + '<tbody>'
+        + d.games.map(function(g) {
+            var ptsClass = parseFloat(g.pts) >= 30 ? ' pts-high' : '';
+            return '<tr>'
+              + '<td>' + g.date + '</td>'
+              + '<td class="' + (g.result==='W'?'win':'loss') + '">' + g.result + '</td>'
+              + '<td class="'+ptsClass+'">' + g.pts + '</td>'
+              + '<td>' + g.reb + '</td>'
+              + '<td>' + g.ast + '</td>'
+              + '<td>' + g.stl + '</td>'
+              + '<td>' + g.blk + '</td>'
+              + '<td>' + g.fg + '</td>'
+              + '<td>' + g.three + '</td>'
+              + '<td>' + g.min + '</td>'
+            + '</tr>';
+          }).join('')
+        + '</tbody></table></div>';
+    } else {
+      html += '<div style="padding:20px;color:var(--muted);text-align:center;font-size:12px">No games found this season vs this opponent yet.</div>';
+    }
+    html += '</div>';
+
+  } else if (d.type === 'position_vs_team') {
+    html = '<div class="stats-result-card">'
+      + '<div class="stats-result-head"><div class="stats-result-title">' + d.title + '</div><div class="stats-result-sub">' + d.subtitle + '</div></div>'
+      + '<div class="stats-table-wrap"><table class="stats-table stats-player-row">'
+      + '<thead><tr><th>Player</th><th>Team</th><th>GP</th><th>PTS</th><th>REB</th><th>AST</th><th>FG%</th><th>MIN</th></tr></thead>'
+      + '<tbody>'
+      + (d.players||[]).map(function(p) {
+          return '<tr><td>' + p.name + '</td><td>' + p.team + '</td><td>' + p.gp + '</td>'
+            + '<td class="' + (parseFloat(p.pts)>=20?'pts-high':'') + '">' + p.pts + '</td>'
+            + '<td>' + p.reb + '</td><td>' + p.ast + '</td><td>' + p.fg + '</td><td>' + p.min + '</td></tr>';
+        }).join('')
+      + '</tbody></table></div></div>';
+
+  } else if (d.type === 'player_season') {
+    var s = d.stats || {};
+    html = '<div class="stats-result-card">'
+      + '<div class="stats-result-head"><div class="stats-result-title">' + d.title + '</div><div class="stats-result-sub">' + d.subtitle + ' · ' + s.gp + ' games played</div></div>'
+      + '<div class="stats-avgs">'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.pts + '</div><div class="stats-avg-lbl">Points</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.reb + '</div><div class="stats-avg-lbl">Rebounds</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.ast + '</div><div class="stats-avg-lbl">Assists</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.stl + '</div><div class="stats-avg-lbl">Steals</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.blk + '</div><div class="stats-avg-lbl">Blocks</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.fg + '</div><div class="stats-avg-lbl">FG%</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.three + '</div><div class="stats-avg-lbl">3P%</div></div>'
+      + '<div class="stats-avg-box"><div class="stats-avg-val">' + s.min + '</div><div class="stats-avg-lbl">Minutes</div></div>'
+      + '</div></div>';
+  }
+
+  result.innerHTML = html || '<div class="stats-suggestion-box"><h3>No Results</h3><p>Try a different search.</p></div>';
+}
